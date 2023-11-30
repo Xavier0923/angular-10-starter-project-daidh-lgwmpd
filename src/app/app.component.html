@@ -1,0 +1,218 @@
+<table
+  mat-table
+  [dataSource]="dataSource"
+  multiTemplateDataRows
+  class="mat-elevation-z8"
+>
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- checkbox Column -->
+  <ng-container matColumnDef="checkbox">
+    <th mat-header-cell *matHeaderCellDef>
+      <mat-checkbox></mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let element">
+      <mat-checkbox [checked]="element.checkbox"></mat-checkbox>
+    </td>
+  </ng-container>
+
+  <!-- inventoryStatus Column -->
+  <ng-container matColumnDef="inventoryStatus">
+    <th mat-header-cell *matHeaderCellDef>盤點狀態</th>
+    <td mat-cell *matCellDef="let element">
+      <span class="material-symbols-outlined" *ngIf="element.inventoryStatus">
+        inventory
+      </span>
+    </td>
+  </ng-container>
+
+  <!-- assetNo Column -->
+  <ng-container matColumnDef="assetNo">
+    <th mat-header-cell *matHeaderCellDef>資產編號</th>
+    <td mat-cell *matCellDef="let element">{{ element.assetNo }}</td>
+  </ng-container>
+
+  <!-- assetName Column -->
+  <ng-container matColumnDef="assetName">
+    <th mat-header-cell *matHeaderCellDef>資產名稱</th>
+    <td mat-cell *matCellDef="let element">{{ element.assetName }}</td>
+  </ng-container>
+
+  <!-- counter Column -->
+  <ng-container matColumnDef="counter">
+    <th mat-header-cell *matHeaderCellDef>盤點人</th>
+    <td mat-cell *matCellDef="let element">{{ element.counter }}</td>
+  </ng-container>
+
+  <!-- place Column -->
+  <ng-container matColumnDef="place">
+    <th mat-header-cell *matHeaderCellDef>盤點地點</th>
+    <td mat-cell *matCellDef="let element">{{ element.place }}</td>
+  </ng-container>
+
+  <!-- inventoryTime Column -->
+  <ng-container matColumnDef="inventoryTime">
+    <th mat-header-cell *matHeaderCellDef>盤點時間</th>
+    <td mat-cell *matCellDef="let element">{{ element.inventoryTime }}</td>
+  </ng-container>
+
+  <!-- 展開明細 -->
+  <ng-container matColumnDef="expandedDetail">
+    <td
+      mat-cell
+      *matCellDef="let element"
+      [attr.colspan]="displayedColumns.length"
+      style="overflow:hidden;"
+    >
+      <div
+        [@expandedDetail]="
+          expandedElement == element ? 'expanded' : 'collapsed'
+        "
+        (@expandedDetail.done)="captureDoneEvent($event.toState, element)"
+      >
+        <form
+          action=""
+          style="margin-left:20px;display:flex;align-item:center;"
+        >
+          <div>
+            <div style="display:flex;align-item:center;">
+              <mat-checkbox
+                #keeperCheckbox
+                style="margin-right:20px;display:flex;align-item:center;"
+                [checked]="false"
+              ></mat-checkbox>
+              <mat-form-field appearance="standard" style="margin-right:20px;">
+                <mat-label>保管人</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="element.keeper"
+                  disabled
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </mat-form-field>
+            </div>
+            <mat-form-field
+              appearance="standard"
+              *ngIf="keeperCheckbox.checked"
+              style="margin-right:20px;margin-left:36px;"
+            >
+              <mat-label>新保管人</mat-label>
+              <input
+                matInput
+                [(ngModel)]="element.newKeeper"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </mat-form-field>
+          </div>
+          <div>
+            <div style="display:flex;align-item:center;">
+              <mat-checkbox
+                #departmentCheckbox
+                style="margin-right:20px;display:flex;align-item:center;"
+                [checked]="false"
+              ></mat-checkbox>
+              <mat-form-field appearance="standard" style="margin-right:20px;">
+                <mat-label>部門</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="element.department"
+                  disabled
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </mat-form-field>
+            </div>
+            <mat-form-field
+              appearance="standard"
+              *ngIf="departmentCheckbox.checked"
+              style="margin-right:20px;margin-left:36px;"
+            >
+              <mat-label>新部門</mat-label>
+              <input
+                matInput
+                [(ngModel)]="element.newDepartment"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </mat-form-field>
+          </div>
+          <div>
+            <div style="display:flex;align-item:center;">
+              <mat-checkbox
+                #locationCheckbox
+                style="margin-right:20px;display:flex;align-item:center;"
+                [checked]="false"
+              ></mat-checkbox>
+              <mat-form-field appearance="standard" style="margin-right:20px;">
+                <mat-label>存放位置</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="element.location"
+                  disabled
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </mat-form-field>
+            </div>
+            <mat-form-field
+              appearance="standard"
+              *ngIf="locationCheckbox.checked"
+              style="margin-right:20px;margin-left:36px;"
+            >
+              <mat-label>新存放位置</mat-label>
+              <input
+                matInput
+                [(ngModel)]="element.newLocation"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </mat-form-field>
+          </div>
+          <mat-form-field
+            appearance="standard"
+            style="margin-right:20px;margin-left:36px;"
+          >
+            <mat-label>狀態</mat-label>
+            <mat-select
+              [(ngModel)]="element.assetState"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <mat-option value="lost"> 遺失 </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+        <div></div>
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr
+    mat-row
+    *matRowDef="let row; columns: displayedColumns"
+    (click)="expandedDetail(row)"
+    (click)="rowSelect(row)"
+  ></tr>
+  <tr
+    mat-row
+    *matRowDef="let row; columns: ['expandedDetail']"
+    style="height:0px;"
+  ></tr>
+</table>
+
+<mat-form-field appearance="fill">
+  <mat-label>Toppings</mat-label>
+  <mat-select [formControl]="toppings" multiple>
+    <mat-select-trigger>
+      {{ toppings.value ? toppings.value[0] : '' }}
+      <span
+        *ngIf="toppings.value?.length > 1"
+        class="example-additional-selection"
+      >
+        (+{{ toppings.value.length - 1 }}
+        {{ toppings.value?.length === 2 ? 'other' : 'others' }})
+      </span>
+    </mat-select-trigger>
+    <mat-option *ngFor="let topping of toppingList" [value]="topping">{{
+      topping
+    }}</mat-option>
+  </mat-select>
+</mat-form-field>
+<span>{{ toppings.value }}</span>
